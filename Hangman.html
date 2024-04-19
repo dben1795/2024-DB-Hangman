@@ -1,18 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<title>Dustins Hangman Game</title>
+	<link rel="stylesheet" href="Hangman.css">
+	<script src="scripts/hangmans.js" defer></script>
+	<script src="scripts/word-list.js" defer></script>
 </head>
 <body>
-	<div class="container">
-		<div class="hangman-frame">
-		<h1>Hangman Game</h1>
+	<div class="game-model">
+	<div class="content">
+		<div class="hangman-stand">
+			<img src="images/stand.html" alt="stand-img">
+		<h1>Try again</h1>
+		<p> The word was : <b>Algorithm</b></p>
+		<button class="One more try!">One more try!</button>
+	    </div>
 	</div>
+	<div class="container">
 	<div class="game-box">
-		<ul>
+		<ul class="word-display">
 		/* note list of words here 
 			<li class="letter"></li>
 			<li class="letter"></li>
-			<li class="letter"></li>
+			<li class="letter guessed">A</li>
 			<li class="letter"></li>
 			<li class="letter"></li>
 			<li class="letter"></li>
@@ -26,7 +38,7 @@
 		 Missed guesses
 			<p>0 / 8</p>
 		</h3>
-		<div class="choices">
+		<div class="Keys">
 			<button>a</button><button>b</button><button>c</button><button>d</button>
 			<button>e</button><button>f</button><button>g</button><button>h</button>
 			<button>i</button><button>j</button><button>k</button><button>l</button>
@@ -38,4 +50,5 @@
 	</div>
 </div>
 </body>
+</html>
 </html>
