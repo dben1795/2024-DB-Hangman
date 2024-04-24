@@ -1,17 +1,54 @@
 <link rel="stylesheet" href="Hangman design.css">
-
+//query selectors for different classes
 const wordDisplay = document.querySelector(".word-display");
+const hangmanImage = document.querySelector(".hangman-stand img");
+const Letters = document.querySelector(".Letters" p);
 const keysDiv = document.querySelector(".keys");
+const gameModel = document.querySelector(".gameModel");
+
+let currentWord, correctLetters = [], wrongGuessCount = 0;
+const maxGuesses = 8;
 
 const getRandomWord = () => {
+	
 	const { word, hint } = wordList[Math.floor(Math.random() * wordList.length)];
+	//random word and hint for wordlist
+	currentWord = word;
 	console.log(word);
 	document.querySelector(".Letters p").innerText = hint;
 	wordDisplay.innerHTML = word.split("").map(() => '<li class="letter"</li>').join("");
 
 }
-const initGame(button, clickedLetter) => {
-	console.log(button, clickedLetter);
+
+
+//setting timeout function 
+const gameOver = (isVictory) => {
+	setTimeout(() => {
+		const modelText = isVictory ? 'you got it:' : 'the correct word was:';
+		gameModel.querySelector("img").src = 'images/${isVictory ? 'victory' : 'lost'}
+		gameModel.classList.add("show");
+	}, 300);
+}
+const initGame = (button, clickedLetter) => {
+	//checking if clickedLetter is existing on currentword
+	if(currentWord.includes(clickedLetter)) {
+		//showing the correct letters to the user
+		[...currentWord].forEach((letter, index) =>  {
+			if(letter === clickedLetter) {
+				correctLetters.push(letter) {
+				wordDisplay.querySelectorAll("li")[index].innerText = letter;
+				wordDisplay.querySelectorAll("li")[index].classList.add("guessed");
+	} else {
+		//if clicked letter doesnt exist then update the wrongguesscount and hangman image
+		wrongGuessCount++;
+		hangmanImage.src = 'images/hangman-${wrongGuessCount}.svg';
+	}
+	
+	button.disabled = true;
+	letters.innerText = '${wrongGuessCount} / ${maxGuesses}';
+	//calling the gameover function for the appropriate result fits the condition
+	if(wrongGuessCount === maxGuesses) return gameOver(false);
+	if(correctLetters.length === currentWord.length) return gameOver(true);
 }
 
 
@@ -23,6 +60,8 @@ for (let i = 97; i <= 122; i++) {
 	button.addEventListener("click", e => initGame(e.target, String.fromCharCode(i)))
 }
 
+
+//creating the list and hints that the game will use
 const wordList = [
 { word: "Hardware", hint: "The physical parts of a computer, like the keyboard and mouse." },
     { word: "Software", hint: "The programs and operating systems that run on a computer." },
