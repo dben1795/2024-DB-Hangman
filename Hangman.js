@@ -2,7 +2,7 @@
 //query selectors for different classes
 const wordDisplay = document.querySelector(".word-display");
 const hangmanImage = document.querySelector(".hangman-stand img");
-const Letters = document.querySelector(".Letters" p);
+const letters = document.querySelector(.letters p);
 const keysDiv = document.querySelector(".keys");
 const gameModel = document.querySelector(".gameModel");
 
@@ -14,7 +14,7 @@ const getRandomWord = () => {
 	const { word, hint } = wordList[Math.floor(Math.random() * wordList.length)];
 	//random word and hint for wordlist
 	currentWord = word;
-	console.log(word);
+	console.log(word,hint);
 	document.querySelector(".Letters p").innerText = hint;
 	wordDisplay.innerHTML = word.split("").map(() => '<li class="letter"</li>').join("");
 
@@ -24,8 +24,10 @@ const getRandomWord = () => {
 //setting timeout function 
 const gameOver = (isVictory) => {
 	setTimeout(() => {
-		const modelText = isVictory ? 'you got it:' : 'the correct word was:';
-		gameModel.querySelector("img").src = 'images/${isVictory ? 'victory' : 'lost'}
+		const modelText = isVictory ? `you got it:` : `the correct word was:`;
+		gameModel.querySelector("img").src = `images/${isVictory ? 'victory' : 'lost'}`;
+		gameModel.querySelector("h3").innerText = `${isVictory ? 'Great Job' : 'Game Over!'}`;
+		gameModel.querySelector("p").innerHTML = `images/${isVictory ? 'victory' : 'lost'}`;
 		gameModel.classList.add("show");
 	}, 300);
 }
@@ -38,6 +40,7 @@ const initGame = (button, clickedLetter) => {
 				correctLetters.push(letter) {
 				wordDisplay.querySelectorAll("li")[index].innerText = letter;
 				wordDisplay.querySelectorAll("li")[index].classList.add("guessed");
+				}
 	} else {
 		//if clicked letter doesnt exist then update the wrongguesscount and hangman image
 		wrongGuessCount++;
@@ -54,10 +57,16 @@ const initGame = (button, clickedLetter) => {
 
 //creating keyboard buttons
 for (let i = 97; i <= 122; i++) {
-	const button = document.createElement("button");
-	button.innertext = String.fromCharCode(i);
-	keysDiv.appendChild(button);
-	button.addEventListener("click", e => initGame(e.target, String.fromCharCode(i)))
+    const button = document.createElement("button");
+    button.textContent = String.fromCharCode(i); // Set text from ASCII code
+    keysDiv.appendChild(button); // Append button to the keys div
+
+    // Event listener using a closure to correctly bind the button and its text content
+    button.addEventListener("click", (function(btn) {
+        return function() {
+            initGame(btn, btn.textContent);
+        };
+    })(button));
 }
 
 
