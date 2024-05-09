@@ -1,76 +1,126 @@
-<link rel="stylesheet" href="Hangman design.css">
-//query selectors for different classes
+//initializes variables
+let displayedWord = "";
 const wordDisplay = document.querySelector(".word-display");
-const hangmanImage = document.querySelector(".hangman-stand img");
-const letters = document.querySelector(.letters p);
-const keysDiv = document.querySelector(".keys");
-const gameModel = document.querySelector(".gameModel");
+let Button = document.getElementById(".keys button");
+let guessedLetters = [];
+let wrongGuesses = 0;
+const maxWrongGuesses = 8;
 
-let currentWord, correctLetters = [], wrongGuessCount = 0;
-const maxGuesses = 8;
 
-const getRandomWord = () => {
-	
-	const { word, hint } = wordList[Math.floor(Math.random() * wordList.length)];
-	//random word and hint for wordlist
-	currentWord = word;
-	console.log(word,hint);
-	document.querySelector(".Letters p").innerText = hint;
-	wordDisplay.innerHTML = word.split("").map(() => '<li class="letter"</li>').join("");
 
+
+
+
+
+
+// This code listens for the 'DOMContentLoaded' event, which fires when the initial HTML document loads
+    document.addEventListener('DOMContentLoaded', function() {
+    //  this Selects the <div> element by class name "keys"
+        const keysDiv = document.querySelector(".keys");
+        //  This Loop through the range of ASCII codes from 97 which would be a, to 122 which would be z
+        for (let i = 97; i <= 122; i++) {
+        // this constant creates my button element
+            const button = document.createElement("button");
+            // this sets the text content of the button to the corresponding lowercase letter
+            button.innerText = String.fromCharCode(i);
+            // Append the button to the "keys" <div> element
+            keysDiv.appendChild(button);
+            button.addEventListener("click", e => initGame(e.target.innerText));
+        }
+         getRandomWord();
+    });
+   
+
+
+//this function gets random a random word from my word list which is an array of 10 words and hints
+function getRandomWord() {
+    const { word, hint } = wordList[Math.floor(Math.random() * wordList.length)];
+    // this outputs the word and hint
+    console.log(word, hint);
+    //gets hint by Id
+    document.getElementById('hint').innerText = "hint: " + hint;
+    //displayed Word is word chosen by word list
+    displayedWord = word;
+    //this line of code is creating a string of HTML that represents all the blank spaces for the letters in the word being guessed.
+    wordDisplay.innerHTML = word.split("").map(() => '<li class = "letter">_</li>').join("");
 }
 
 
-//setting timeout function 
-const gameOver = (isVictory) => {
-	setTimeout(() => {
-		const modelText = isVictory ? `you got it:` : `the correct word was:`;
-		gameModel.querySelector("img").src = `images/${isVictory ? 'victory' : 'lost'}`;
-		gameModel.querySelector("h3").innerText = `${isVictory ? 'Great Job' : 'Game Over!'}`;
-		gameModel.querySelector("p").innerHTML = `images/${isVictory ? 'victory' : 'lost'}`;
-		gameModel.classList.add("show");
-	}, 300);
+//function that runs game based off clicked letter
+function initGame (clickedLetter) {
+
+
+ 
+    // Check if the user's guess is already in the guessedLetters array
+    if (guessedLetters.length >= maxWrongGuesses || wordGuessed()) {
+      return;
+    }
+// Check if the array `guessedLetters` contains the `clickedLetter`
+    if (guessedLetters.includes(clickedLetter)) {
+        return;
+    }
+ 
+    // Add the user's guess to the guessedLetters array
+    guessedLetters.push(clickedLetter);
+// if wrong letter is not included in word update wrong guesses and updates guess count
+    if (!displayedWord.includes(clickedLetter)) {
+        wrongGuesses++;
+        updateGuessCount();
+    }
+ 
+
+
+    updateWordDisplay();
+
+
+   
+ 
+    // this function Updates the word display on screen
+
+
+function updateWordDisplay() {
+    // Sets the `innerHTML` property of the `wordDisplay` element to a string that contains the updated word display
+   wordDisplay.innerHTML = displayedWord.split("").map(letter => {
+    // If the `guessedLetters` array includes the current `letter`, this will return a string that contains the letter wrapped in an <li> element with the class name "letter"
+    if (guessedLetters.includes(letter)) {
+       
+        return '<li class="letter">${letter}</li>';
+    } else {
+        // Otherwise, return a string that contains an underscore (_) wrapped in an <li> element with the class name "letter"
+        return'<li class="letter">_</li>';
+    }
+   }).join("");
+   // If the number of `wrongGuesses` is greater than or equal to the maximum number of `maxWrongGuesses` or the word has been guessed, it calls the `endGame` function
+   if (wrongGuesses >= maxWrongGuesses || wordGuessed()) {
+    endGame();
 }
-const initGame = (button, clickedLetter) => {
-	//checking if clickedLetter is existing on currentword
-	if(currentWord.includes(clickedLetter)) {
-		//showing the correct letters to the user
-		[...currentWord].forEach((letter, index) =>  {
-			if(letter === clickedLetter) {
-				correctLetters.push(letter) {
-				wordDisplay.querySelectorAll("li")[index].innerText = letter;
-				wordDisplay.querySelectorAll("li")[index].classList.add("guessed");
-				}
-	} else {
-		//if clicked letter doesnt exist then update the wrongguesscount and hangman image
-		wrongGuessCount++;
-		hangmanImage.src = 'images/hangman-${wrongGuessCount}.svg';
-	}
-	
-	button.disabled = true;
-	letters.innerText = '${wrongGuessCount} / ${maxGuesses}';
-	//calling the gameover function for the appropriate result fits the condition
-	if(wrongGuessCount === maxGuesses) return gameOver(false);
-	if(correctLetters.length === currentWord.length) return gameOver(true);
 }
 
 
-//creating keyboard buttons
-for (let i = 97; i <= 122; i++) {
-    const button = document.createElement("button");
-    button.textContent = String.fromCharCode(i); // Set text from ASCII code
-    keysDiv.appendChild(button); // Append button to the keys div
+function updateGuessCount() {
+    // Set the `innerText` property of the <p> element inside the "letters" <div> to a string that contains the number of `wrongGuesses` and the `maxWrongGuesses`
+document.querySelector(".letters p").innerText = `${wrongGuesses} / ${maxWrongGuesses}`;
+}
+//function displays guessed word
+function wordGuessed() {
+    //this line of code is checking if all the characters in the displayedWord string are included in the guessedLetters array.
+return displayedWord.split("").every(letter => guessedLetters.includes(letter));
+}
+//function that decides when game is over and displays if player won or lost
+function endGame() {
+if (wordGuessed()) {
+    //  this displays Game won, else represents game lost
+    console.log("You won!");
+} else {
 
-    // Event listener using a closure to correctly bind the button and its text content
-    button.addEventListener("click", (function(btn) {
-        return function() {
-            initGame(btn, btn.textContent);
-        };
-    })(button));
+
+    console.log("You lost!");
+}
 }
 
 
-//creating the list and hints that the game will use
+ 
+//this is an array that randomly chooses a word along with the hint
 const wordList = [
 { word: "Hardware", hint: "The physical parts of a computer, like the keyboard and mouse." },
     { word: "Software", hint: "The programs and operating systems that run on a computer." },
@@ -84,4 +134,5 @@ const wordList = [
     { word: "Cache", hint: "A place where data is stored temporarily to help websites, browsers, and apps load faster." }
 ];
 
-getRandomWord();
+
+getRandomWord()};
